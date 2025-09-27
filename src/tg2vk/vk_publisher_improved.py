@@ -114,83 +114,42 @@ class VKPublisherImproved:
 
     def upload_video_to_wall_and_videos(self, file_path: str, name: str, description: str) -> dict:
         """
-        Загружает видео и в раздел "Видео" группы, и публикует на стену
+        Загружает видео в раздел "Видео" группы (токены групп не могут публиковать на стену)
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(file_path)
         
         try:
-            # Сначала загружаем в раздел видео
+            # Загружаем только в раздел видео (токены групп не могут публиковать на стену)
             video_result = self.upload_video_to_group_videos(file_path, name, description)
             
-            # Затем публикуем на стену
-            video_id = video_result['video_id']
-            owner_id = video_result['owner_id']
-            
-            log.info(f"Публикуем видео {video_id} на стену группы...")
-            post = self.vk.wall.post(
-                owner_id=-self.group_id,
-                message=description,
-                attachments=f"video{owner_id}_{video_id}"
-            )
-            
-            log.info(f"Видео опубликовано на стену, post_id: {post.get('post_id')}")
+            log.info(f"Видео загружено в раздел видео группы: {video_result['video_id']}")
             
             return {
-                "post_id": post.get("post_id"),
-                "video_id": video_id,
-                "owner_id": owner_id,
+                "video_id": video_result['video_id'],
+                "owner_id": video_result['owner_id'],
+                "post_id": None,  # Токены групп не могут публиковать на стену
                 "upload_response": video_result.get("upload_response")
             }
             
         except Exception as e:
-            log.error(f"Ошибка при загрузке видео на стену и в раздел видео: {e}")
+            log.error(f"Ошибка при загрузке видео в раздел видео: {e}")
             raise
 
     def upload_video_to_stories(self, file_path: str, name: str, description: str) -> dict:
         """
-        Загружает видео в Stories группы
+        Загружает видео в раздел "Видео" группы (Stories недоступны для токенов групп)
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(file_path)
         
         try:
-            # Получаем upload_url для Stories
-            log.info(f"Получаем upload_url для Stories: {name}")
-            stories_info = self.vk.stories.getPhotoUploadServer(
-                group_id=abs(self.group_id),
-                add_to_news=1  # Добавляем в новости
-            )
-            
-            upload_url = stories_info['upload_url']
-            
-            log.info(f"Получен upload_url для Stories")
-            
-            # Загружаем файл
-            with open(file_path, 'rb') as video_file:
-                files = {'file': video_file}
-                response = requests.post(upload_url, files=files)
-                response.raise_for_status()
-            
-            upload_result = response.json()
-            log.info(f"Файл загружен для Stories, response: {upload_result}")
-            
-            # Сохраняем Stories
-            stories_save_result = self.vk.stories.save(
-                upload_result=upload_result,
-                group_id=abs(self.group_id),
-                caption=description
-            )
-            
-            log.info(f"Stories сохранены: {stories_save_result}")
-            
-            return {
-                "stories_id": stories_save_result.get("stories_id"),
-                "upload_response": upload_result
-            }
+            # Токены групп не могут загружать в Stories, загружаем в раздел видео
+            log.info(f"Stories недоступны для токенов групп, загружаем в раздел видео: {name}")
+            return self.upload_video_to_group_videos(file_path, name, description)
             
         except Exception as e:
-            log.error(f"Ошибка при загрузке видео в Stories: {e}")
+            log.error(f"Ошибка при загрузке видео: {e}")
             raise
 
     def post_to_wall(self, message: str, attachments: Optional[list[str]] = None) -> dict:
