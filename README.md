@@ -8,7 +8,7 @@
 
 ```bash
 # Клонируйте репозиторий
-git clone <repository_url>
+git clone https://github.com/Baltyara/tg2vk_autopost.git
 cd tg2vk_autopost
 
 # Разверните на сервер
