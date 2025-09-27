@@ -13,7 +13,7 @@
 
 ```bash
 # Подключитесь к серверу
-ssh root@5.129.229.223
+ssh user@your-server.com
 
 # Перейдите в директорию приложения
 cd /opt/tg2vk_autopost
@@ -81,7 +81,7 @@ systemctl status tg2vk-autopost.service
 
 ```bash
 # Подключение к серверу
-ssh root@5.129.229.223
+ssh user@your-server.com
 
 # Переход в директорию приложения
 cd /opt/tg2vk_autopost

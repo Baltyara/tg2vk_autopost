@@ -3,7 +3,7 @@ set -e
 
 # Скрипт развертывания tg2vk_autopost на сервере
 
-SERVER_HOST="5.129.229.223"
+SERVER_HOST="your-server.com"
 SERVER_USER="root"
 APP_NAME="tg2vk_autopost"
 APP_DIR="/opt/$APP_NAME"

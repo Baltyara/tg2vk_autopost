@@ -1,7 +1,7 @@
 #!/bin/bash
 # Скрипт управления tg2vk_autopost на сервере
 
-SERVER_HOST="5.129.229.223"
+SERVER_HOST="your-server.com"
 SERVER_USER="root"
 SERVICE_NAME="tg2vk-autopost"
 APP_DIR="/opt/tg2vk_autopost"
