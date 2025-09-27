@@ -30,6 +30,8 @@ wheels/
 .env.local
 .env.production
 .env.staging
+prod.env
+test.env
 
 # IDE
 .vscode/
@@ -50,6 +52,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+nohup.out
 
 # Data files
 data/inbox/
@@ -59,9 +62,28 @@ data/metrics.json
 data/rate_state.json
 
 # Test files
-test.env
 test_*.py
+test_stories.py
 
 # Temporary files
 *.tmp
 *.temp
+
+# Git
+.git/
+.gitignore.bak
+
+# Playwright
+.playwright-mcp/
+
+# VK API test files
+vk_*.py
+vk_*.html
+
+# Project documentation
+project.md
+VK_UPLOAD_INSTRUCTIONS.md
+
+# Backup files
+*.bak
+*.backup
