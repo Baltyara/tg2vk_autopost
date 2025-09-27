@@ -17,11 +17,19 @@ cd tg2vk_autopost
 
 ### Настройка
 
-1. Подключитесь к серверу: `ssh root@5.129.229.223`
-2. Перейдите в директорию: `cd /opt/tg2vk_autopost`
-3. Скопируйте конфигурацию: `cp configs/config.prod.env .env`
-4. Отредактируйте `.env` файл с вашими токенами
-5. Запустите сервис: `systemctl start tg2vk-autopost.service`
+1. **Получите токены API:**
+   - Следуйте инструкции в [TOKEN_SETUP_GUIDE.md](TOKEN_SETUP_GUIDE.md)
+   - Получите Telegram API ключи (api_id, api_hash, session_string)
+   - Получите VK токен группы (group_token, group_id)
+
+2. **Настройте конфигурацию:**
+   - Скопируйте конфигурацию: `cp configs/config.sample.env .env`
+   - Отредактируйте `.env` файл с вашими токенами
+   - Проверьте настройки: `python3 -m tg2vk --help`
+
+3. **Запустите сервис:**
+   - `systemctl start tg2vk-autopost.service`
+   - Проверьте статус: `systemctl status tg2vk-autopost.service`
 
 ## 📋 Основные возможности
 
@@ -29,7 +37,7 @@ cd tg2vk_autopost
 - **Дневные ограничения**: Максимум 20 постов в день
 - **Временные окна**: Работает только с 10:00 до 22:00 по Москве
 - **Автоматическая очистка**: Удаляет опубликованные видео
-- **Фильтрация контента**: Проверяет вертикальность, модерация через GigaChat
+- **Фильтрация контента**: Проверяет вертикальность, базовая модерация по ключевым словам
 - **Дедупликация**: Предотвращает повторную публикацию
 
 ## 🛠 Управление
@@ -68,23 +76,66 @@ python -m tg2vk daemon     # Демон
 TG_API_ID=your_api_id
 TG_API_HASH=your_api_hash
 TG_SESSION_STRING=your_session_string
-TG_INVITE_LINK=https://t.me/joinchat/AAAAAFElevcbuyK0EeBX9Q
+TG_INVITE_LINK=https://t.me/joinchat/your_invite_link
 
 # VK API
 VK_GROUP_TOKEN=your_vk_token
-VK_GROUP_ID=club147630752
+VK_GROUP_ID=your_group_id
 
 # Политика публикации
-POSTING_POLICY__MAX_DAILY_POSTS=20
-POSTING_POLICY__BATCH_SIZE=20
-POSTING_POLICY__AUTO_CLEANUP=true
+POSTING_DAY_START_HOUR=10
+POSTING_DAY_END_HOUR=22
+POSTS_PER_DAY_MIN=8
+POSTS_PER_DAY_MAX=12
+POSTING_INTERVAL_MIN_MINUTES=60
+POSTING_INTERVAL_MAX_MINUTES=120
 ```
 
-### Политика ссылок
+### Получение токенов
 
-- **Разрешены**: только `https://t.me/joinchat/AAAAAFElevcbuyK0EeBX9Q`
-- **Блокируются**: все остальные ссылки
-- **Удаляется**: фраза "Подписывайся 👉 PZDC (https://t.me/joinchat/AAAAAFElevcbuyK0EeBX9Q)"
+#### Telegram API ключи
+
+1. **Создайте приложение:**
+   - Перейдите на https://my.telegram.org/apps
+   - Войдите в аккаунт Telegram
+   - Нажмите "Create application"
+   - Заполните форму:
+     - App title: `tg2vk_autopost`
+     - Short name: `tg2vk`
+     - Platform: `Desktop`
+   - Получите `api_id` и `api_hash`
+
+2. **Получите session_string:**
+   - Откройте https://web.telegram.org/a/
+   - Войдите в аккаунт
+   - Нажмите F12 → Console
+   - Выполните код:
+   ```javascript
+   const authKey = localStorage.getItem('dc2_auth_key');
+   console.log('Session string:', authKey);
+   ```
+
+#### VK токены
+
+1. **Создайте VK приложение:**
+   - Перейдите на https://vk.com/apps?act=manage
+   - Нажмите "Создать приложение"
+   - Заполните:
+     - Название: `tg2vk_autopost`
+     - Платформа: "Веб-сайт"
+     - Адрес сайта: `https://example.com`
+   - Получите App ID
+
+2. **Получите токен группы:**
+   - Откройте ссылку (замените YOUR_APP_ID):
+   ```
+   https://oauth.vk.com/authorize?client_id=YOUR_APP_ID&redirect_uri=https://oauth.vk.com/blank.html&scope=video,wall,groups&response_type=token&v=5.131&display=page
+   ```
+   - Войдите в VK и разрешите доступ
+   - Скопируйте `access_token` из URL
+   - Укажите ID группы в `VK_GROUP_ID`
+
+**Подробная инструкция:** [TOKEN_SETUP_GUIDE.md](TOKEN_SETUP_GUIDE.md)
 
 ## 📊 Мониторинг
 
@@ -125,10 +176,11 @@ tg2vk_autopost/
 
 ## 📚 Документация
 
+- [TOKEN_SETUP_GUIDE.md](TOKEN_SETUP_GUIDE.md) - Подробная инструкция по получению токенов
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Подробное руководство по развертыванию
 - [docs/SETUP.md](docs/SETUP.md) - Настройка API ключей
 - [docs/USAGE.md](docs/USAGE.md) - Использование команд
-- [docs/roadmap.md](docs/roadmap.md) - План разработки
+- [roadmap.md](roadmap.md) - План разработки
 
 ## 🚨 Устранение неполадок
 
